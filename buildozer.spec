@@ -7,9 +7,9 @@ package.domain = org.jean.mystudents
 source.dir = .
 source.include_exts = py,png,jpg,kv,atlas
 
-version = 1.0
+version = 
 
-requirements = python3,kivy==2.3.1,kivymd==2.0.0,sqlite3,pillow
+requirements = python3==3.11.8,kivy==2.3.1,kivymd==2.0.0,sqlite3,pillow
 
 orientation = portrait
 fullscreen = 0
