@@ -15,7 +15,7 @@ jobs:
         run: |
           docker run --rm \
             -v "$(pwd)":/home/user/hostcwd \
-            -e ANDROID_ACCEPT_SDK_LICENSE=y \
+            --entrypoint /bin/bash \
             kivy/buildozer bash -c "yes | buildozer android debug"
 
       - name: Upload APK
