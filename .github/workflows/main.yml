@@ -11,13 +11,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Prepare Android SDK licenses
+        run: |
+          mkdir -p licenses
+          printf '8933bad161af4178b1185d1a37fbf41ea5269c55\nd56f5187479451eabf01fb78af6dfcb131a6481e\n' > licenses/android-sdk-license
+          printf '84831b9409646a918e30573bab4c9c91346d8abd\n' > licenses/android-sdk-preview-license
+
       - name: Build APK with Buildozer (official Kivy image)
         run: |
           docker run --rm \
             -v "$(pwd)":/home/user/hostcwd \
-            --entrypoint /bin/bash \
-            kivy/buildozer bash -c "yes | buildozer android debug"
-
+            -v "$(pwd)/licenses":/home/user/.buildozer/android/platform/android-sdk/licenses \
+            kivy/buildozer android debug
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
