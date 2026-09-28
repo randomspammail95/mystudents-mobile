@@ -1,0 +1,54 @@
+name: Build Android APK
+
+# Builds the Darwin Admin phone app (mobile/) into an installable APK.
+# Runs on every push that touches mobile/, or manually from the Actions tab ("Run workflow").
+on:
+  push:
+    paths:
+      - "mobile/**"
+      - ".github/workflows/android-apk.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: mobile
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: mobile/package-lock.json
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - name: Install JS dependencies
+        run: npm ci
+
+      - name: Copy web app into the Android project
+        run: npx cap sync android
+
+      - name: Build APK
+        working-directory: mobile/android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon
+
+      - name: Rename APK
+        run: |
+          mkdir -p ../apk
+          cp android/app/build/outputs/apk/release/app-release.apk ../apk/DarwinAdmin-${{ github.run_number }}.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DarwinAdmin-apk-${{ github.run_number }}
+          path: apk/*.apk
+          retention-days: 30
